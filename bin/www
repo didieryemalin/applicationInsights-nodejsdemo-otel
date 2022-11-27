@@ -7,7 +7,6 @@
 var { getApp } = require("../app");
 var debug = require("debug")("todolist:server");
 var http = require("http");
-
 /**
  * Create HTTP server.
  */
