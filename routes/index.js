@@ -2,14 +2,21 @@ var express = require('express');
 const axios = require('axios');
 var Task = require('../models/task');
 
+const opentelemetry = require("@opentelemetry/api");
+const tracer = opentelemetry.trace.getTracer("ai-nodejsdemo-otel-tracer")
+
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  const span = tracer. .startSpan("ai-nodejsdemo-otel-homepage");
+
   Task.find()
     .then((tasks) => {      
       const currentTasks = tasks.filter(task => !task.completed);
       const completedTasks = tasks.filter(task => task.completed === true);
+
+      span.addEvent("loading home page");
 
       console.log(`Total tasks: ${tasks.length}   Current tasks: ${currentTasks.length}    Completed tasks:  ${completedTasks.length}`)
       res.render('index', { currentTasks: currentTasks, completedTasks: completedTasks, emailServiceResponse: 'Not sent' });
@@ -18,10 +25,14 @@ router.get('/', function(req, res, next) {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
+  
+  span.end();
 });
 
 
 router.post('/addTask', function(req, res, next) {
+  const span = tracer.startSpan("ai-nodejsdemo-otel-newtask");
+
   const taskName = req.body.taskName;
   const createDate = Date.now();
   
@@ -31,6 +42,8 @@ router.post('/addTask', function(req, res, next) {
   });
   console.log(`Adding a new task ${taskName} - createDate ${createDate}`)
 
+  span.addEvent(`Adding a new task ${taskName} - createDate ${createDate}`);
+
   task.save()
       .then(() => { 
         console.log(`Added new task ${taskName} - createDate ${createDate}`)        
@@ -39,27 +52,38 @@ router.post('/addTask', function(req, res, next) {
           console.log(err);
           res.send('Sorry! Something went wrong.');
       });
+  
+  span.end();
 });
 
 router.post('/completeTask', function(req, res, next) {
-  console.log("I am in the PUT method")
+  const span = tracer.startSpan("ai-nodejsdemo-otel-completetask");
+  
   const taskId = req.body._id;
   const completedDate = Date.now();
 
+  span.addEvent(`Completing task ${taskId}`);
+
   Task.findByIdAndUpdate(taskId, { completed: true, completedDate: Date.now()})
-    .then(() => { 
+    .then(() => {
       console.log(`Completed task ${taskId}`)
       res.redirect('/'); }  )
     .catch((err) => {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
+  
+  span.end();
 });
 
-
 router.post('/deleteTask', function(req, res, next) {
+  const span = tracer.startSpan("ai-nodejsdemo-otel-deletetask");
+
   const taskId = req.body._id;
   const completedDate = Date.now();
+
+  span.addEvent(`Deleting task ${taskId}`);
+
   Task.findByIdAndDelete(taskId)
     .then(() => { 
       console.log(`Deleted task $(taskId)`)      
@@ -68,9 +92,13 @@ router.post('/deleteTask', function(req, res, next) {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
+
+  span.end();
 });
 
 router.post('/emailTasks', function(req, res, next){
+  const span = tracer.startSpan("ai-nodejsdemo-otel-emailtask");
+
   const emailAddress = req.body.emailAddress;
   console.log("email is " + emailAddress);
 
@@ -83,21 +111,19 @@ router.post('/emailTasks', function(req, res, next){
 
       console.log(`Total tasks: ${tasks.length}   Current tasks: ${currentTasks.length}    Completed tasks:  ${completedTasks.length}`)
       
-      console.log("About to email tasks");
+      console.log("About to send tasks to task processor API");
+      span.addEvent("About to send tasks to task processor API");
       
-      const currentTasksSummary = getTasksSummary(currentTasks);
-      const completedTasksSummary = getTasksSummary(completedTasks);
-
-      axios.post(process.env.EMAIL_SERVICE_URL, { 
-          emailAddress: emailAddress, 
-          currentTasks: currentTasksSummary, 
-          completedTasks: completedTasksSummary 
-        })
-        .then(function(response){
-          //console.log(response);
-        })
-        .catch(function(error){
-          console.log(error);
+      axios.post(process.env.TASK_PROCESSOR_URL, { 
+        emailAddress: emailAddress, 
+        currentTasks: currentTasks, 
+        completedTasks: completedTasks 
+      })
+      .then(function(response){
+        console.log("Tasks sent to Task processor API")
+      })
+      .catch(function(error){
+        console.log(error);
       });
 
       res.redirect('/');
@@ -107,17 +133,8 @@ router.post('/emailTasks', function(req, res, next){
       res.send('Sorry! Something went wrong.');
     });
   }
+
+  span.end();
 });
-
-function getTasksSummary(tasks){
-  let tasksSummary = "";
-
-  for(let i = 0; i < tasks.length; i++){
-    tasksSummary = (i == (tasks.length - 1)) ? (tasksSummary + tasks[i].taskName) : (tasksSummary + `${tasks[i].taskName}, `)
-  }
-  
-  console.log(tasksSummary);
-  return tasksSummary;
-};
 
 module.exports = router;
