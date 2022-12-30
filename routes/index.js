@@ -3,13 +3,12 @@ const axios = require('axios');
 var Task = require('../models/task');
 
 const opentelemetry = require("@opentelemetry/api");
-const tracer = opentelemetry.trace.getTracer("ai-nodejsdemo-otel-tracer")
 
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  const span = tracer. .startSpan("ai-nodejsdemo-otel-homepage");
+  const span = opentelemetry.trace.getActiveSpan();
 
   Task.find()
     .then((tasks) => {      
@@ -25,13 +24,11 @@ router.get('/', function(req, res, next) {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
-  
-  span.end();
 });
 
 
 router.post('/addTask', function(req, res, next) {
-  const span = tracer.startSpan("ai-nodejsdemo-otel-newtask");
+  const span = opentelemetry.trace.getActiveSpan();
 
   const taskName = req.body.taskName;
   const createDate = Date.now();
@@ -52,13 +49,11 @@ router.post('/addTask', function(req, res, next) {
           console.log(err);
           res.send('Sorry! Something went wrong.');
       });
-  
-  span.end();
 });
 
 router.post('/completeTask', function(req, res, next) {
-  const span = tracer.startSpan("ai-nodejsdemo-otel-completetask");
-  
+  const span = opentelemetry.trace.getActiveSpan();
+
   const taskId = req.body._id;
   const completedDate = Date.now();
 
@@ -72,12 +67,10 @@ router.post('/completeTask', function(req, res, next) {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
-  
-  span.end();
 });
 
 router.post('/deleteTask', function(req, res, next) {
-  const span = tracer.startSpan("ai-nodejsdemo-otel-deletetask");
+  const span = opentelemetry.trace.getActiveSpan();
 
   const taskId = req.body._id;
   const completedDate = Date.now();
@@ -92,12 +85,10 @@ router.post('/deleteTask', function(req, res, next) {
       console.log(err);
       res.send('Sorry! Something went wrong.');
     });
-
-  span.end();
 });
 
 router.post('/emailTasks', function(req, res, next){
-  const span = tracer.startSpan("ai-nodejsdemo-otel-emailtask");
+  const span = opentelemetry.trace.getActiveSpan();
 
   const emailAddress = req.body.emailAddress;
   console.log("email is " + emailAddress);
@@ -133,8 +124,6 @@ router.post('/emailTasks', function(req, res, next){
       res.send('Sorry! Something went wrong.');
     });
   }
-
-  span.end();
 });
 
 module.exports = router;
