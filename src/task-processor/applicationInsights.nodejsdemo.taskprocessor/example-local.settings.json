@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "COSMOS_DB_CONNECTION_STRING": "",
+    "COSMOS_DB_DATABASE_NAME": "todo-db",
+    "COSMOS_DB_CONTAINER_NAME": "email_notifications",
+    "EMAIL_SERVICE_URI": "",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": ""
+  }
+
+}

@@ -1,1 +1,1 @@
-# applicationInsights-nodejsdemo-otel
+# applicationInsights-nodejsdemo-codeless

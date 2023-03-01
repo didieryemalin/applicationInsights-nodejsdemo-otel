@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "COSMOS_DB_CONNECTION_STRING": "mongodb://appi-euwest-nodejsdemo-otel-cosmos:BywQnhaFVocIcAGHi1uIlHeGyfuaXa73MXqx6S74nq6lFnixonHY4YHs6lIY8gKHl8Jxkudaw6XiACDbgy3GIQ==@appi-euwest-nodejsdemo-otel-cosmos.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@appi-euwest-nodejsdemo-otel-cosmos@",
+    "COSMOS_DB_DATABASE_NAME": "todo-db",
+    "COSMOS_DB_CONTAINER_NAME": "email_notifications",
+    "EMAIL_SERVICE_URI": "https://prod-18.westeurope.logic.azure.com:443/workflows/c2c568e202a944948743ca17de06b9ca/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Uw0U1VN9L-P1PhjzTMgasgtzNqyjzognPxBaD8XypqM",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=673c2791-ab66-4d55-8446-363de71665a1;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/"
+  }
+
+}

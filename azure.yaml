@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: applicationInsights-nodejsdemo-codeless
+services:
+  web: 
+    project: ./src/app
+    language: js
+    host: appservice
+  api:
+    project: ./src/task-processor/applicationInsights.nodejsdemo.taskprocessor
+    language: dotnet
+    host: function
+infra:
+    provider: bicep
+    path: ./infra
+    module: main
+pipeline:
+    provider: "github"
